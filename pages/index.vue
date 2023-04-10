@@ -1,42 +1,76 @@
 <template>
-  <div>
-    <client-only placeholder="Loading...">
-        <BarChart :chart-data="data" :height="100" :width="300" />
-    </client-only>
-  </div>
+  <canvas ref="canvas"></canvas>
 </template>
 
 <script>
+import { Chart, LineController, BarController, CategoryScale, LinearScale } from 'chart.js';
+
+Chart.register(LineController, BarController, CategoryScale, LinearScale);
+
+let delayed;
 export default {
-  data() {
-    return {
-      data: {
-        labels: 'Quac quac',
-        datasets: [{
-          label: 'My First Dataset',
-          data: [65, 59, 80, 81, 56, 55, 40],
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.5)',
-            'rgba(255, 159, 64, 0.5)',
-            'rgba(255, 205, 86, 0.5)',
-            'rgba(75, 192, 192, 0.5)',
-            'rgba(54, 162, 235, 0.5)',
-            'rgba(153, 102, 255, 0.5)',
-            'rgba(201, 203, 207, 0.5)'
-          ],
-          borderColor: [
-            'rgb(255, 99, 132)',
-            'rgb(255, 159, 64)',
-            'rgb(255, 205, 86)',
-            'rgb(75, 192, 192)',
-            'rgb(54, 162, 235)',
-            'rgb(153, 102, 255)',
-            'rgb(201, 203, 207)'
-          ],
-          borderWidth: 1
-        }]
+data() {
+  return {
+    chart: null,
+  };
+},
+mounted() {
+  const canvas = this.$refs.canvas;
+  const ctx = canvas.getContext('2d');
+  this.chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      datasets: [
+        {
+          type: 'line',
+          label: 'Line Dataset',
+          data: [20, 50, 30, 40, 50, 60, 50, 30, 70, 50, 35, 70],
+          borderColor: '#91cc75',
+          fill: false,
+          tension: 0.3
+        },
+        {
+          type: 'bar',
+          label: 'Bar Dataset',
+          data: [30, 80, 40, 70, 10, 80, 30, 65, 75, 20, 45, 60],
+          backgroundColor: '#5470c6',
+        },
+      ],
+    },
+    options: {
+      animation: {
+        onComplete: () => {
+          delayed = true;
+        },
+        delay: (context) => {
+          let delay = 0;
+          if (context.type === 'data' && context.mode === 'default' && !delayed) {
+            delay = context.dataIndex * 300 + context.datasetIndex * 100;
+          }
+          return delay;
+        },
+        // tension: {
+        //   duration: 1000,
+        //   easing: 'linear',
+        //   from: 1,
+        //   to: 0,
+        //   loop: true
+        // }
+      },
+      scales: {
+        x: {
+          stacked: true,
+        },
+        y: {
+          stacked: true
+        }
       }
-    };
-  }
-}
+    }
+  });
+},
+beforeDestroy() {
+  this.chart.destroy();
+},
+};
 </script>
