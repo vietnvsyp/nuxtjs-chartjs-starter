@@ -17,10 +17,10 @@ export default {
     };
   },
   mounted() {
-    const self = this;
-    const canvas = self.$refs.canvas;
+    const canvas = this.$refs.canvas;
+    console.log(canvas);
     const ctx = canvas.getContext('2d');
-    self.chart = new Chart(ctx, {
+    this.chart = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -73,7 +73,7 @@ export default {
     });
   },
   beforeDestroy() {
-    self.chart.destroy();
+    this.chart.destroy();
   },
 };
 </script>
